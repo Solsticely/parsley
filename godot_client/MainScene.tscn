@@ -1,0 +1,80 @@
+[gd_scene load_steps=4 format=3 uid="uid://ccohm0ookncm2"]
+
+[ext_resource type="Script" uid="uid://8wflithmmb4d" path="res://MainScript.gd" id="1_3mqji"]
+
+[sub_resource type="SystemFont" id="SystemFont_3mqji"]
+font_names = PackedStringArray("Monospace")
+
+[sub_resource type="LabelSettings" id="LabelSettings_x4av3"]
+font = SubResource("SystemFont_3mqji")
+font_size = 12
+
+[node name="MainScene" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ScriptRunner" type="Node" parent="." node_paths=PackedStringArray("debuglabel", "address", "devicepicker")]
+script = ExtResource("1_3mqji")
+debuglabel = NodePath("../Spacing/SceneBody/ActiveControllerArea/Labels/DebugLabel")
+address = NodePath("../Spacing/SceneBody/Input/Address")
+devicepicker = NodePath("../Spacing/SceneBody/Input/Devices")
+
+[node name="Spacing" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 40
+theme_override_constants/margin_top = 40
+theme_override_constants/margin_right = 40
+theme_override_constants/margin_bottom = 40
+
+[node name="SceneBody" type="VBoxContainer" parent="Spacing"]
+layout_mode = 2
+
+[node name="ActiveControllerArea" type="CenterContainer" parent="Spacing/SceneBody"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Labels" type="VBoxContainer" parent="Spacing/SceneBody/ActiveControllerArea"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Spacing/SceneBody/ActiveControllerArea/Labels"]
+layout_mode = 2
+text = "Change address, and use controls :D"
+horizontal_alignment = 1
+
+[node name="DebugLabel" type="Label" parent="Spacing/SceneBody/ActiveControllerArea/Labels"]
+layout_mode = 2
+label_settings = SubResource("LabelSettings_x4av3")
+horizontal_alignment = 1
+
+[node name="Input" type="HBoxContainer" parent="Spacing/SceneBody"]
+layout_mode = 2
+
+[node name="AddressLabel" type="Label" parent="Spacing/SceneBody/Input"]
+layout_mode = 2
+text = "Address"
+
+[node name="Address" type="TextEdit" parent="Spacing/SceneBody/Input"]
+custom_minimum_size = Vector2(0, 35)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "127.0.0.1:8800"
+placeholder_text = "127.0.0.1:8800"
+
+[node name="DevicesLabel" type="Label" parent="Spacing/SceneBody/Input"]
+layout_mode = 2
+text = "Address"
+
+[node name="Devices" type="OptionButton" parent="Spacing/SceneBody/Input"]
+custom_minimum_size = Vector2(0, 35)
+layout_mode = 2
+size_flags_horizontal = 3
+allow_reselect = true
