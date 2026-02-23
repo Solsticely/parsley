@@ -52,7 +52,7 @@ impl Packet {
 		let mut pointer = 0;
 		for axis in Axis::all_variants() {
 			let value = u16::from_le_bytes(*self.0[pointer..pointer+2].first_chunk::<2>().unwrap()) as f32 - (u16::MAX >> 1) as f32;
-			let value = value / (u16::MAX >> 1) as f32 - 1.0;
+			let value = value / (u16::MAX >> 1) as f32;
 			joystick.move_axis_float(*axis, value)?;
 			pointer += 2
 		}

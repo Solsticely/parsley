@@ -18,7 +18,7 @@ fn main() -> Result<(), Error> {
     let connection = network::Connection::new("192.168.0.17:8800")?;
     
     loop {
-        connection.next_message()?.apply_packet(&joystick);
+        connection.next_message()?.apply_packet(&joystick)?;
     }
 
     // loop {
