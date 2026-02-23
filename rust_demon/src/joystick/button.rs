@@ -1,25 +1,27 @@
-use std::slice;
+crate::enum_mixer!{
+    const BUTTON_COUNT: u8;
 
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]
-pub enum Button {
-    LeftNorth,
-    LeftSouth,
-    LeftEast,
-    LeftWest,
+    #[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]
+    pub enum Button {
+        LeftNorth,
+        LeftSouth,
+        LeftEast,
+        LeftWest,
 
-    LeftSpecial,
+        LeftSpecial,
 
-    RightNorth,
-    RightSouth,
-    RightEast,
-    RightWest,
+        RightNorth,
+        RightSouth,
+        RightEast,
+        RightWest,
 
-    RightSpecial,
+        RightSpecial,
 
-    L1,
-    R1,
-    L2,
-    R2,
+        L1,
+        R1,
+        L2,
+        R2
+    }
 }
 
 impl Button {
@@ -47,26 +49,5 @@ impl Button {
             L2 => ButtonTL2,
             R2 => ButtonTR2,
         }
-    }
-
-    pub fn all_buttons() -> slice::Iter<'static, Self> {
-        use Button::*;
-        [
-            LeftNorth,
-            LeftSouth,
-            LeftEast,
-            LeftWest,
-            LeftSpecial,
-            RightNorth,
-            RightSouth,
-            RightEast,
-            RightWest,
-            RightSpecial,
-            L1,
-            R1,
-            L2,
-            R2,
-        ]
-        .iter()
     }
 }

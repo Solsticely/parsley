@@ -3,7 +3,9 @@ mod button;
 mod error;
 
 pub use axis::Axis;
+pub use axis::AXIS_COUNT;
 pub use button::Button;
+pub use button::BUTTON_COUNT;
 pub use error::Error;
 
 use input_linux::sys;
@@ -41,6 +43,16 @@ impl Joystick {
         ))
     }
 
+    pub fn move_axis_float(&self, axis: Axis, position: f32) -> Result<(), Error> {
+        self.move_axis(axis, ((position * 512.0).round() as i32).clamp(-512,512))
+    }
+
+    pub fn reset(&self) -> Result<(), Error> {
+        for axis in Axis::all_variants() { self.move_axis(*axis, 0)?; }
+        for button in Button::all_variants() { self.button_press(*button, false)?; }
+        Ok(())
+    }
+    
     pub fn button_press(&self, button: Button, is_pressed: bool) -> Result<(), Error> {
         let value = if is_pressed {
             input_linux::KeyState::PRESSED
@@ -94,7 +106,7 @@ fn create_joystick_device() -> Result<input_linux::UInputHandle<fs::File>, Error
     device.set_evbit(input_linux::EventKind::Key)?;
     device.set_keybit(input_linux::Key::ButtonTrigger)?; // informs linux that this is a joystick
 
-    for button in Button::all_buttons() {
+    for button in Button::all_variants() {
         device.set_keybit(button.to_evdev_button())?;
     }
 
@@ -102,7 +114,7 @@ fn create_joystick_device() -> Result<input_linux::UInputHandle<fs::File>, Error
         &input_id,
         b"arduino-virtual-joystick",
         0,
-        &Axis::all_axes()
+        &Axis::all_variants()
             .map(|axis| input_linux::AbsoluteInfoSetup {
                 axis: axis.to_evdev_axis(),
                 info: standard_info,
