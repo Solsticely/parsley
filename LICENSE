@@ -1,3 +1,8 @@
+The joystick related code in rust_demon is almost entirely derived from arduino-joystick
+source: https://github.com/gwilymk/arduino-joystick
+arduino-joystick is Copyright 2021 Gwilym Kuiper <gw@ilym.me>
+
+Rest of the rust demon project (under rust_demon/src) is licenced under the MIT license as follows:
 Copyright 2026 Solsticely <contact me at 6675636B7468697340626174736869742E73697465>
 
 Permission is hereby granted, free of charge, to any person obtaining a

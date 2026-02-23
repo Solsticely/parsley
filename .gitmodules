@@ -1,3 +1,0 @@
-[submodule "external/arduino-joystick"]
-	path = external/arduino-joystick
-	url = https://github.com/gwilymk/arduino-joystick
