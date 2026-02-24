@@ -15,7 +15,7 @@ fn main() -> Result<(), Error> {
         "Created joystick with device path {}",
         joystick.device_path().expect("Can't acquire joystick!").to_string_lossy()
     );
-    let connection = network::Connection::new("192.168.0.17:8800")?;
+    let connection = network::Connection::new("127.0.0.1:8800")?;
     
     loop {
         connection.next_message()?.apply_packet(&joystick)?;

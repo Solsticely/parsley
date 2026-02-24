@@ -3,24 +3,24 @@ crate::enum_mixer!{
 
     #[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]
     pub enum Button {
-        LeftNorth,
-        LeftSouth,
-        LeftEast,
-        LeftWest,
+        XboxA,
+        XboxB,
+        XboxX,
+        XboxY,
 
-        LeftSpecial,
+        DpadUp,
+        DpadDown,
+        DpadLeft,
+        DpadRight,
 
-        RightNorth,
-        RightSouth,
-        RightEast,
-        RightWest,
+        Start,
+        Select,
+        Home,
 
-        RightSpecial,
-
-        L1,
-        R1,
-        L2,
-        R2
+        LeftShoulder,
+        RightShoulder,
+        LeftThumb,
+        RightThumb
     }
 }
 
@@ -30,24 +30,24 @@ impl Button {
         use Button::*;
 
         match &self {
-            LeftNorth => ButtonDpadUp,
-            LeftSouth => ButtonDpadDown,
-            LeftEast => ButtonDpadLeft,
-            LeftWest => ButtonDpadRight,
+            XboxA => ButtonSouth,
+            XboxB => ButtonEast,
+            XboxX => ButtonWest,
+            XboxY => ButtonNorth,
 
-            LeftSpecial => ButtonStart,
+            DpadUp => ButtonDpadUp,
+            DpadDown => ButtonDpadDown,
+            DpadLeft => ButtonDpadLeft,
+            DpadRight => ButtonDpadRight,
 
-            RightNorth => ButtonNorth,
-            RightSouth => ButtonSouth,
-            RightEast => ButtonEast,
-            RightWest => ButtonWest,
+            Button::Start => ButtonStart,
+            Button::Select => ButtonSelect,
+            Button::Home => ButtonMode,
 
-            RightSpecial => ButtonSelect,
-
-            L1 => ButtonTL,
-            R1 => ButtonTR,
-            L2 => ButtonTL2,
-            R2 => ButtonTR2,
+            LeftShoulder => ButtonTL,
+            RightShoulder => ButtonTR,
+            LeftThumb => ButtonThumbl,
+            RightThumb => ButtonThumbr,
         }
     }
 }
