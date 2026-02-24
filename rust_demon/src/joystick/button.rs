@@ -32,8 +32,8 @@ impl Button {
         match &self {
             XboxA => ButtonSouth,
             XboxB => ButtonEast,
-            XboxX => ButtonWest,
-            XboxY => ButtonNorth,
+            XboxX => ButtonNorth,
+            XboxY => ButtonWest,
 
             DpadUp => ButtonDpadUp,
             DpadDown => ButtonDpadDown,
