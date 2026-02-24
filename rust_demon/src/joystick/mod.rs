@@ -47,12 +47,6 @@ impl Joystick {
         self.move_axis(axis, ((position * 512.0).round() as i32).clamp(-512,512))
     }
 
-    pub fn reset(&self) -> Result<(), Error> {
-        for axis in Axis::all_variants() { self.move_axis(*axis, 0)?; }
-        for button in Button::all_variants() { self.button_press(*button, false)?; }
-        Ok(())
-    }
-    
     pub fn button_press(&self, button: Button, is_pressed: bool) -> Result<(), Error> {
         let value = if is_pressed {
             input_linux::KeyState::PRESSED

@@ -6,8 +6,6 @@ mod enum_mixer;
 
 pub(crate) use enum_mixer::enum_mixer;
 pub use error::Error;
-use joystick::Axis;
-use tokio;
 
 fn main() -> Result<(), Error> {
     let joystick = joystick::Joystick::new().expect("Can't acquire joystick!");
