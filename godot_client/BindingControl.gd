@@ -1,14 +1,14 @@
 extends VBoxContainer
-class_name RemappingControl
+class_name BindingControl
 
 @export var control_name: String:
 	set(text):
 		control_name = text
 		_on_control_name_update()
 
-@export var remap_type: RemapType:
+@export var binding_type: BindingType:
 	set(value):
-		remap_type = value
+		binding_type = value
 		_on_control_update()
 
 @export var control_inx: int = 0:
@@ -20,13 +20,13 @@ class_name RemappingControl
 	set(value):
 		joypad_id = value
 		_on_joypad_change()
-@onready var remap_button: Button = $Remap/Button
-@onready var control_label: Label = $Remap/Name
+@onready var binding_button: Button = $Binding/Button
+@onready var control_label: Label = $Binding/Name
 @onready var indicator: ProgressBar = $Indicator
 
 var joypad_deactivated: bool = true
 
-enum RemapType {
+enum BindingType {
 	BUTTON,
 	AXIS
 }
@@ -38,23 +38,23 @@ func _on_control_name_update():
 		control_label.text = control_name
 
 func _on_control_update():
-	if remap_button != null:
-		match remap_type:
-			RemapType.BUTTON:
-				remap_button.text = "Button %d" % control_inx
-			RemapType.AXIS:
-				remap_button.text = "Axis %d" % control_inx
+	if binding_button != null:
+		match binding_type:
+			BindingType.BUTTON:
+				binding_button.text = "Button %d" % control_inx
+			BindingType.AXIS:
+				binding_button.text = "Axis %d" % control_inx
 	mapping_changed.emit()
 
-func _on_remap_button_clicked():
-	remap_button.text = "<Press keybind>"
+func _on_binding_button_clicked():
+	binding_button.text = "<Press keybind>"
 	var value: Array[Variant] = await get_next_pressed_control()
 	if len(value) == 0:
 		return
-	remap_type = value[0]
+	binding_type = value[0]
 	control_inx = value[1]
 
-# Returns [RemapType, RemapIndex]
+# Returns [BindingType, BindingIndex]
 func get_next_pressed_control() -> Array[Variant]:
 	# Get initial state of everything
 	var buttons: Array[bool] = []
@@ -71,12 +71,12 @@ func get_next_pressed_control() -> Array[Variant]:
 		# Check if any buttons are in a different state
 		for i in range(JOY_BUTTON_MAX):
 			if buttons[i] != Input.is_joy_button_pressed(joypad_id, i):
-				return [RemapType.BUTTON, i]
+				return [BindingType.BUTTON, i]
 		
 		# Check if any axes are in a different state
 		for i in range(JOY_AXIS_MAX):
 			if abs(axes[i] - Input.get_joy_axis(joypad_id, i)) > 0.3:
-				return [RemapType.AXIS, i]
+				return [BindingType.AXIS, i]
 	
 	return []
 
@@ -91,39 +91,39 @@ func _on_joypad_change():
 	joypad_deactivated = joypad_id == -1
 	if indicator != null:
 		indicator.indeterminate = joypad_deactivated
-	if remap_button != null:
-		remap_button.disabled = joypad_deactivated
+	if binding_button != null:
+		binding_button.disabled = joypad_deactivated
 
 func _ready() -> void:
 	_on_joypad_change()
 	_on_control_update()
 	_on_control_name_update()
-	remap_button.pressed.connect(_on_remap_button_clicked)
+	binding_button.pressed.connect(_on_binding_button_clicked)
 
 func output_as_float() -> float:
 	if joypad_deactivated:
 		return 0
 
-	match remap_type:
-		RemapType.BUTTON:
+	match binding_type:
+		BindingType.BUTTON:
 			return 1 if Input.is_joy_button_pressed(joypad_id, control_inx) else -1
-		RemapType.AXIS:
+		BindingType.AXIS:
 			return Input.get_joy_axis(joypad_id, control_inx)
 
-	assert(false, "Unhandled remap type")
+	assert(false, "Unhandled binding type")
 	return 0
 
 func output_as_bool() -> bool:
 	if joypad_deactivated:
 		return false
 	
-	match remap_type:
-		RemapType.BUTTON:
+	match binding_type:
+		BindingType.BUTTON:
 			return Input.is_joy_button_pressed(joypad_id, control_inx)
-		RemapType.AXIS:
+		BindingType.AXIS:
 			return Input.get_joy_axis(joypad_id, control_inx) > 0
 
-	assert(false, "Unhandled remap type")
+	assert(false, "Unhandled binding type")
 	return 0
 
 func _process(_delta: float) -> void:

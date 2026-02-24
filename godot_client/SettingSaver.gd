@@ -8,8 +8,8 @@ func write_save(main_script: MainScript) -> void:
 	enable_saving = false
 
 	var savestate: Dictionary[String, Variant] = {
-		"binds_axes": get_all_remaps(main_script.axis_remaps),
-		"binds_buttons": get_all_remaps(main_script.button_remaps),
+		"binds_axes": get_all_bindings(main_script.axis_bindings),
+		"binds_buttons": get_all_bindings(main_script.button_bindings),
 		"address": main_script.address.text
 	}
 
@@ -19,13 +19,13 @@ func write_save(main_script: MainScript) -> void:
 	
 	enable_saving = true
 
-func get_all_remaps(list: Array[RemappingControl]) -> Array[Dictionary]:
+func get_all_bindings(list: Array[BindingControl]) -> Array[Dictionary]:
 	var result: Array[Dictionary] = []
 	
-	for remap in list:
+	for binding in list:
 		result.append({
-			"inx": remap.control_inx,
-			"is_button": remap.remap_type == RemappingControl.RemapType.BUTTON
+			"inx": binding.control_inx,
+			"is_button": binding.binding_type == BindingControl.BindingType.BUTTON
 		})
 	
 	return result
@@ -54,7 +54,7 @@ func safe_index(base: Variant, index: Variant, type: Variant.Type, default: Vari
 
 	return ensure_type(base[index], type, default)
 
-func safe_load_control_mapping(inx: int, json: Variant, remaps: Array[RemappingControl], max_control_inx: int) -> Variant:
+func safe_load_control_mapping(inx: int, json: Variant, bindings: Array[BindingControl], max_control_inx: int) -> Variant:
 	var mapping: Dictionary = safe_index(json, inx, TYPE_DICTIONARY, {"skip": true, "mapping_had_wrong_type": 1})
 	if "skip" in mapping or "is_button" not in mapping or "inx" not in mapping:
 		return mapping
@@ -62,8 +62,8 @@ func safe_load_control_mapping(inx: int, json: Variant, remaps: Array[RemappingC
 	var control_inx: int = ensure_type(mapping["inx"], TYPE_INT, -1)
 	if typeof(mapping["is_button"]) != TYPE_BOOL or control_inx < 0 or control_inx > max_control_inx:
 		return mapping
-	remaps[inx].control_inx = control_inx
-	remaps[inx].remap_type = RemappingControl.RemapType.BUTTON if is_button else RemappingControl.RemapType.AXIS
+	bindings[inx].control_inx = control_inx
+	bindings[inx].binding_type = BindingControl.BindingType.BUTTON if is_button else BindingControl.BindingType.AXIS
 	return null
 
 func load_save(main_script: MainScript) -> void:
@@ -79,12 +79,12 @@ func load_save(main_script: MainScript) -> void:
 
 	main_script.address.text = safe_index(as_json, "address", TYPE_STRING, "127.0.0.1:8800")
 
-	for inx in range(min(len(binds_buttons), len(main_script.button_remaps))):
-		var result = safe_load_control_mapping(inx, binds_buttons, main_script.button_remaps, JOY_BUTTON_MAX)
+	for inx in range(min(len(binds_buttons), len(main_script.button_bindings))):
+		var result = safe_load_control_mapping(inx, binds_buttons, main_script.button_bindings, JOY_BUTTON_MAX)
 		if result != null:
 			push_error("Encountered bad mapping in save: base[%s]=%s"%[str(inx), str(result)])
 
-	for inx in range(min(len(binds_axes), len(main_script.axis_remaps))):
-		var result = safe_load_control_mapping(inx, binds_axes, main_script.axis_remaps, JOY_AXIS_MAX)
+	for inx in range(min(len(binds_axes), len(main_script.axis_bindings))):
+		var result = safe_load_control_mapping(inx, binds_axes, main_script.axis_bindings, JOY_AXIS_MAX)
 		if result != null:
 			push_error("Encountered bad mapping in save: base[%s]=%s"%[str(inx), str(result)])

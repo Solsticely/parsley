@@ -1,23 +1,23 @@
 [gd_scene load_steps=3 format=3 uid="uid://cmklkveypxktd"]
 
-[ext_resource type="Script" uid="uid://cs6bd3rxw0jn7" path="res://RemappingControl.gd" id="1_gx4xo"]
+[ext_resource type="Script" uid="uid://cs6bd3rxw0jn7" path="res://BindingControl.gd" id="1_6ayk5"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_8nfsh"]
 
-[node name="ControlRemapper" type="VBoxContainer"]
+[node name="ControlBinder" type="VBoxContainer"]
 theme_override_constants/separation = 0
-script = ExtResource("1_gx4xo")
+script = ExtResource("1_6ayk5")
 
-[node name="Remap" type="HBoxContainer" parent="."]
+[node name="Binding" type="HBoxContainer" parent="."]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="Name" type="Label" parent="Remap"]
+[node name="Name" type="Label" parent="Binding"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "<control>"
 
-[node name="Button" type="Button" parent="Remap"]
+[node name="Button" type="Button" parent="Binding"]
 custom_minimum_size = Vector2(100, 35)
 layout_mode = 2
 text = "<keybind>"

@@ -23,13 +23,13 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="ScriptRunner" type="Node" parent="." node_paths=PackedStringArray("debuglabel", "address", "joypadpicker", "transportpicker", "control_remapping_container")]
+[node name="ScriptRunner" type="Node" parent="." node_paths=PackedStringArray("debuglabel", "address", "joypadpicker", "transportpicker", "control_binding_container")]
 script = ExtResource("1_3mqji")
 debuglabel = NodePath("../Spacing/Sidebar/ScrollContainer2/Labels/DebugLabel")
 address = NodePath("../Spacing/Sidebar/ScrollContainer/Input/Address/Address")
 joypadpicker = NodePath("../Spacing/Sidebar/ScrollContainer/Input/Joypads/Joypads")
 transportpicker = NodePath("../Spacing/Sidebar/ScrollContainer/Input/Transport/Transport")
-control_remapping_container = NodePath("../Spacing/Sidebar/ScrollContainer/Input/AllControls")
+control_binding_container = NodePath("../Spacing/Sidebar/ScrollContainer/Input/AllControls")
 
 [node name="Spacing" type="MarginContainer" parent="."]
 layout_mode = 1

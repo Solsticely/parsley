@@ -6,11 +6,11 @@ class_name MainScript
 @export var address: TextEdit
 @export var joypadpicker: OptionButton
 @export var transportpicker: OptionButton
-@export var control_remapping_container: Container
+@export var control_binding_container: Container
 @export_range(0, 10, 0) var slow_tick_rate: float = 1.0;
 @export_range(1, 100, 0) var update_tick_rate: float = 32;
 
-@onready var remapping_control: PackedScene = preload("res://RemappingControl.tscn")
+@onready var binding_control: PackedScene = preload("res://BindingControl.tscn")
 @onready var transport: Transport = UDPTransport.new()
 var debuglines: Array[String]
 
@@ -36,7 +36,7 @@ const ALL_JOY_BUTTON_NAMES: PackedStringArray = [
 	"Start", "Select", "Home",
 	"Left shoulder", "Right shoulder", "Left stick press", "Right stick press"
 ]
-var button_remaps: Array[RemappingControl] = []
+var button_bindings: Array[BindingControl] = []
 
 const ALL_JOY_AXES: Array[JoyAxis] = [
 	JOY_AXIS_LEFT_X, JOY_AXIS_LEFT_Y,
@@ -50,13 +50,14 @@ const ALL_JOY_AXIS_NAMES: PackedStringArray = [
 	"Right analog X", "Right analog Y",
 	"Left trigger", "Right trigger",
 ]
-var axis_remaps: Array[RemappingControl] = []
+var axis_bindings: Array[BindingControl] = []
 
 @onready var REGISTERED_TRANSPORTS: Dictionary[Variant, String] = {
-	UDPTransport.new: "UDP transport (not supported on web)", Transport.new: "Dummy transport"
+	UDPTransport.new: "UDP transport (not supported on web)", Transport.new: "Dummy transport",
 }
 
 var saver: SettingSaver = SettingSaver.new()
+var timer: Timer = Timer.new()
 
 func _ready() -> void:
 	# Set up debuglines
@@ -80,23 +81,23 @@ func _ready() -> void:
 	update_joypads()
 	joypadpicker.item_selected.connect(func(_a):update_selected_joypad())
 	
-	# Set up axis remaps
+	# Set up axis bindings
 	for axis in range(len(ALL_JOY_AXES)):
-		var remap = remapping_control.instantiate()
-		remap.control_name = ALL_JOY_AXIS_NAMES[axis]
-		remap.remap_type = RemappingControl.RemapType.AXIS
-		remap.control_inx = axis
-		axis_remaps.append(remap)
-		control_remapping_container.add_child(remap)
+		var binding = binding_control.instantiate()
+		binding.control_name = ALL_JOY_AXIS_NAMES[axis]
+		binding.binding_type = BindingControl.BindingType.AXIS
+		binding.control_inx = axis
+		axis_bindings.append(binding)
+		control_binding_container.add_child(binding)
 
-	# Set up button remaps
+	# Set up button bindings
 	for button in range(len(ALL_JOY_BUTTONS)):
-		var remap = remapping_control.instantiate()
-		remap.control_name = ALL_JOY_BUTTON_NAMES[button]
-		remap.remap_type = RemappingControl.RemapType.BUTTON
-		remap.control_inx = button
-		button_remaps.append(remap)
-		control_remapping_container.add_child(remap)
+		var binding = binding_control.instantiate()
+		binding.control_name = ALL_JOY_BUTTON_NAMES[button]
+		binding.binding_type = BindingControl.BindingType.BUTTON
+		binding.control_inx = button
+		button_bindings.append(binding)
+		control_binding_container.add_child(binding)
 	
 	# Set up saving and load save
 	saver.load_save(self)
@@ -104,15 +105,18 @@ func _ready() -> void:
 
 	# Set up autosaving
 	address.text_changed.connect(_on_savestate_update)
-	for i in button_remaps + axis_remaps:
+	for i in button_bindings + axis_bindings:
 		i.mapping_changed.connect(_on_savestate_update)
+	
+	# Set up ticking
+	timer.timeout.connect(_on_tick)
+	add_child(timer)
+	timer.start(1.0/60)
 
-var fasttick = 0;
-func _process(delta: float) -> void:
-	if fasttick < 0:
-		fasttick = 1/update_tick_rate
-		send_packet()
-	fasttick -= delta
+func _on_tick() -> void:
+	send_packet()
+
+func _process(_delta: float) -> void:
 	debuglabel.text = "".join(debuglines)
 
 func can_send_packet() -> bool:
@@ -141,7 +145,7 @@ func send_packet() -> void:
 		return
 	
 	var packet = PackedByteArray([])
-	for axis in axis_remaps:
+	for axis in axis_bindings:
 		var valu = axis.output_as_float()
 		valu = int(round((valu + 1)*2**15))
 		valu = max(0,valu)
@@ -150,7 +154,7 @@ func send_packet() -> void:
 		valu = valu >> 8
 		packet.append(valu & 0xff)
 	
-	for button in button_remaps:
+	for button in button_bindings:
 		var valu = button.output_as_bool()
 		packet.append(1 if valu else 0)
 	
@@ -167,7 +171,7 @@ func update_selected_joypad() -> void:
 	selected_joypad_inx = joypadpicker.get_selected_id()
 	selected_joypad_hash = get_joy_hash(selected_joypad_inx)
 
-	for i in axis_remaps + button_remaps:
+	for i in axis_bindings + button_bindings:
 		i.joypad_id = selected_joypad_inx
 
 func get_joy_hash(inx: int) -> String:
